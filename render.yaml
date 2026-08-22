@@ -1,0 +1,30 @@
+# Render Blueprint — full service definition for Madasha (SL Blackhat Group)
+# If you create a NEW service: Render Dashboard -> New -> Blueprint -> pick this repo.
+# If you keep your EXISTING service: you do not need this file to do anything;
+# just add the disk + env vars manually in the dashboard (see README.md).
+services:
+  - type: web
+    name: madasha
+    runtime: python
+    plan: standard
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 8 --timeout 120
+    healthCheckPath: /healthz
+    disk:
+      name: madasha-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /var/data/madasha
+      - key: KEEP_HOURS
+        value: "12"
+      # secrets are set in the Render dashboard, never in the repo:
+      - key: MIC_KEY
+        sync: false
+      - key: LISTEN_KEY
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASS
+        sync: false
